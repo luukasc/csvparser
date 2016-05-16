@@ -1,0 +1,65 @@
+@(files: Array[CSV])
+ 
+@main("CSV file directory") {
+    <p></p>
+ 	
+ 	<div data-ng-controller="SearchController">
+ 		<h2>There are {{ results.length }} results</h2>
+     	<input data-ng-model="input" data-ng-change="doSearch(input)" autofocus>
+     	<p>
+     		<div data-ng-controller="PageController">
+     			<ul>
+      				<li data-ng-repeat="result in results">
+      				<p></p>
+						<a href="" ng-click="passResult(result)"> {{ result }}  </a>
+					</li>
+				</ul>
+			</div>
+		</p>
+    </div>
+    
+    <p></p>
+    
+	<ul>
+  		<table width>
+  			<tr>
+  				<td>
+					<button ng-click="showme=true"> Show all</button>
+   				</td>
+   				<td>
+   					<button ng-click="showme=false"> Hide </button> 
+   				<td>	
+   					<div ng-controller="FlowController">
+   						<button ng-click="backToLogin()"> Back to login </button>
+   					</div>
+   				</td>
+			</tr>	
+  		</table>
+  		
+  		<div ng-controller = SomeController ng-show="showme">
+			<p ng-bind-html = "customHtml" ></p>
+			
+			<h2> There are @files.size files </h2>
+			@for(t <- files) {
+				<h3>@t.name</h3>
+				<table width = 70%>
+	        			<tr>
+	            			<td>Points: </td>
+	            			<td>@t.points</td>
+	        			</tr> 
+	        			 <tr>   
+					    	<td>Passed:</td>
+					    	<td>@t.passed</td>
+					    </tr>
+					    <tr> 
+					    	<td>Failed:</td> 
+					    	<td> @t.failed </td>
+					    </tr>
+    		}
+    			</table>
+		</div>
+  	</ul>
+  	
+
+ 
+}

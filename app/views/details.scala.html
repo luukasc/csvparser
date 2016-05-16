@@ -1,0 +1,30 @@
+@(name: String, details: CSV)
+ 
+@main("Details") {
+    <h1>Details for @name CSV file </h1>
+    <table style="width:90%">
+	    <tr> 
+	    	<td>Name:</td> 
+	    	<td>@name</td>
+	    </tr> 
+	    <tr> 
+	    	<td>Total sum of points:</td>   
+	    	<td>@details.points </td>
+	    </tr>
+	    <tr>   
+	    	<td>Passed:</td>
+	    	<td>@details.passed</td>
+	    </tr>
+	    <tr> 
+	    	<td>Failed:</td> 
+	    	<td> @details.failed </td>
+	    </tr>
+    </table>
+    <p></p>
+
+    
+    <div ng-controller="FlowController">
+    	<button ng-click="backToFiles()"> Back to files </button>
+    </div>
+    
+}  

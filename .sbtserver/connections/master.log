@@ -1,0 +1,16 @@
+New log file opened at Tue May 10 10:13:45 EEST 2016 by 8673@Luukass-MacBook-Pro.local
+Taking next connection to: 61204
+New client attempting to connect on port: 61205-61204
+  Address = /10.100.41.227:61204
+This client on port 61205 has uuid c9d5bad4-d292-4f26-8255-0abcae4d2b1f configName play-fork-run humanReadableName Play Fork Run protocolVersion 1 featureTags Vector()
+Connected Clients: play-fork-run-c9d5bad4-d292-4f26-8255-0abcae4d2b1f
+Taking next connection to: 61204
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 61204
+Checking to see if clients are empty...
+No non-daemon clients connected after 3 min. Shutting down.
+Server socket thread exiting.
+0 clients open, will close them...
+All client sockets have been closed.
+Closing the 8673@Luukass-MacBook-Pro.local logs at Tue May 10 10:19:45 EEST 2016, goodbye.
