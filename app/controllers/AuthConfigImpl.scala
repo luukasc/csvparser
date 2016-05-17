@@ -60,21 +60,24 @@ trait AuthConfigImpl extends AuthConfig {
   /**
    * Where to redirect the user after a successful login.
    */
-  def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
+  def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
+    println("AuthConfigImpl: loginSucceeded called -> HomeController.index")
     Future.successful(Redirect(controllers.routes.HomeController.index))
-
+  }
   /**
    * Where to redirect the user after logging out
    */
-  def logoutSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
+  def logoutSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
+    println("AuthConfigImpl: logoutSucceeded called -> HomeController.login")
     Future.successful(Redirect(routes.HomeController.login))
-
+  }
   /**
    * If the user is not logged in and tries to access a protected resource then redirect them as follows:
    */
-  def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
+  def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
+    println("AuthConfigImpl: authenticationFailed called -> HomeController.login")
     Future.successful(Redirect(routes.HomeController.login))
-
+  }
   /**
    * If authorization failed (usually incorrect password) redirect the user as follows:
    */

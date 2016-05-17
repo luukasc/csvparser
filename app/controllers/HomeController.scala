@@ -52,13 +52,13 @@ class HomeController @Inject() extends Controller with AuthConfigImpl with Login
     Ok(views.html.details(args, CSV))
   }
 
-  def listDetails() = Action {
+  def listDetails() = StackAction(AuthorityKey -> Role.NormalUser) { implicit request => 
     Ok(views.html.listDetails())
 }
 
   /** Alter the login page action to suit your application. */
   def login = Action { implicit request =>
-    Ok(views.html.login(loginForm))
+    Ok(views.html.login( loginForm ))
   }
 
     /** Your application's login form.  Alter it to fit your application */
@@ -91,12 +91,54 @@ class HomeController @Inject() extends Controller with AuthConfigImpl with Login
    * you can add a procedure like the `gotoLogoutSucceeded`.
    */
   def authenticate = Action.async { implicit request =>
+    println("HomeController: authenticate called")
     loginForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.login(formWithErrors))),
-      user => gotoLoginSucceeded(user.get.id)
+      formWithErrors => {
+        println("Authenticate: Error: " + loginForm.data.map(println(_)))
+        Future.successful(BadRequest(views.html.login(formWithErrors)))
+      },
+      user => {
+        println("Authenticate: Success: " + loginForm.data.map(println(_)))
+        gotoLoginSucceeded(user.get.id)
+      }
     )
   }
 
+  // CREATE NEW USER
+  
+  /** Your application's login form.  Alter it to fit your application 
+  *  mapping("email" -> email, "password" -> text)(Users.authenticate)(_.map(u => (u.email, "")))
+  *  .verifying("Invalid email or password", result => result.isDefined)
+  * 
+  */
+  val createUserForm = Form {
+    mapping(
+        "name" -> text, 
+        "email" -> email, 
+        "password" -> text
+        )(Users.apply)(Users.unapply).verifying("Email already on use!", result => result.isDefined)
+  }
+  
+  // TODO: no idea
+  def authenticateNew = Action.async { implicit request =>
+    println("HomeController: authenticateNew called")
+    
+    createUserForm.bindFromRequest.fold(
+      formWithErrors => {
+        println("HomeController: createUserForm: formWithErrors")
+        println(createUserForm.bindFromRequest.errors)
+        Future.successful(BadRequest(views.html.createNewUser(formWithErrors)))
+      },
+      user => {
+          gotoLoginSucceeded(user.get.id)
+          }
+    )
+  }
+    
+  def createNewUser() = Action { implicit request =>
+    Ok(views.html.createNewUser(createUserForm))
+  }
 
-
+  
+  
 }

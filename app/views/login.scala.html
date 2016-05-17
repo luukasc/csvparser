@@ -1,4 +1,6 @@
-@(form: Form[Option[Users]])(implicit flash: Flash)
+@(loginForm: Form[Option[Users]])(implicit flash: Flash)
+
+
 @main("Login") {
 
 <body>
@@ -7,7 +9,7 @@
 
     <h1>Sign in</h1>
 
-    @form.globalError.map { error =>
+    @loginForm.globalError.map { error =>
       <p class="error">
         @error.message
       </p>
@@ -20,7 +22,7 @@
     }
 
     <p>
-      <input type="email" name="email" placeholder="Email" id="email" value="@form("email").value">
+      <input type="email" name="email" placeholder="Email" id="email" value="@loginForm("email").value">
     </p>
     <p>
       <input type="password" name="password" id="password" placeholder="Password">
@@ -30,6 +32,9 @@
     </p>
 
   }
+
+	<p></p><p></p><p></p>
+	<a href="createNewUser">Create new user</a>
 
 </body>
 	

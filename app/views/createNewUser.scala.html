@@ -1,0 +1,45 @@
+@(createNewForm: Form[Option[Users]])(implicit flash: Flash)
+
+@main("Login") {
+	<body>
+	
+	@helper.form(controllers.routes.HomeController.authenticateNew) {
+		<h1>Create new user</h1>
+		
+		@createNewForm.globalError.map { error =>
+      		<p class="error">
+       		 	@error.message
+      		</p>
+    	}
+
+    	@flash.get("success").map { message =>
+      	<p class="success">
+      		@message
+      	</p>
+    	}
+	
+	
+	
+	<p>
+		<input type="text" name="name" placeholder="Name" id="name" value="@createNewForm("name").value">
+	</p>
+	<p>
+		<input type="email" name="email" placeholder="Email" id="email" value="@createNewForm("email").value">
+	</p>
+	<p>
+      <input type="password" name="password" id="password" placeholder="Password">
+    </p>
+    <p>
+      <button type="submit" id="createNew">Create new user</button>
+    </p>
+	
+	}
+	
+	<p></p><p></p><p></p>
+	<a href="login"> Back to login </a>
+	
+	</body>
+
+
+}
+  

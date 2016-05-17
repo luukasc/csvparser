@@ -9,6 +9,10 @@ GET		/logout						controllers.HomeController.logout
 
 POST	/login						controllers.HomeController.authenticate
 
+# Create new user:
+GET		/createNewUser				controllers.HomeController.createNewUser
+POST	/createNewUser				controllers.HomeController.authenticateNew
+
 # Messages:
 GET     /messages/main               controllers.Messages.main
 GET     /messages/list               controllers.Messages.list
@@ -19,13 +23,13 @@ GET     /messages/write              controllers.Messages.write
 GET		/search/:term   	controllers.Search.perform(term:String)
 GET		/search/        	controllers.Search.perform(term:String="")
 
-# Detail
+# Details
 GET		/files/detail/:name	   	controllers.HomeController.detail(name: String)
-#GET	/detail				controllers.HomeController.index
 
-
+# Home
 GET		/files 				controllers.HomeController.index
 
+# Random
 GET		/listDetails			controllers.HomeController.listDetails
 
 

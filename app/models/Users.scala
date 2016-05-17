@@ -2,15 +2,44 @@ package models
 
 import java.io._
 import scala.io.BufferedSource
+import scala.util.Random
 
-case class Users(id: String, email: String, password: String, name: String, role: Role) 
-  
+case class Users(id: String, email: String, password: String, name: String, role: Role)
 
-  
   object Users {
-  
+    
     val filePath = models.Utils.filePath
+      
+    def apply(name: String, email: String, password: String) = {
+      println("Users: apply called")
+      createUser(name, email, password)
+    }
+    
+    def unapply(user: Option[Users]): Option[(String,String,String)]  = {
+      println("Users: unapply called")
+     try {
+       Option(user.get.name, user.get.email, user.get.password)
+     } catch {
+       case e: Exception => Option(null)
+     }
+    }
   
+    def createUser(name: String, email: String, password: String): Option[Users] = {
+      println("Users: createUser called")
+      if (checkForDuplicates(email)) Option(null) 
+      else { 
+        val result = new Users(createId, email, password, name, Role.stringToRole("NormalUser"))
+        writeUserToFile(result)
+        Option(result)
+      }
+    }
+    
+    // TODO: Make better
+    def createId: String = {
+      Utils.idGenerator += 1
+      (Utils.idGenerator + 1).toString
+    }
+    
     def authenticate(email: String, password: String): Option[Users] = {
       findByEmail(email).filter( user => password == user.password)
     }
@@ -37,13 +66,24 @@ case class Users(id: String, email: String, password: String, name: String, role
       listOfAll.toSeq
     }
 
-    def create(users: Users) {
+    def writeUserToFile(users: Users) {
         val bw = new BufferedWriter(new FileWriter(filePath, true))
-        bw.write(users.id + "," + users.email + "," + users.name + "," + users.role.toString)
+        bw.write(users.id.toString() + "," + users.email.toString() + ","+ users.password.toString + "," + users.name.toString() + "," + models.Role.roleToString(users.role) + "\n")
         bw.close()  
     }
     
-    
-    
+    def checkForDuplicates(email: String): Boolean = {
+      println("Users: checkForDuplicates called")
+      if (findByEmail(email).getOrElse(false) == false) {
+        println("Users: checkForDuplicates called: 1: There were no duplicates!")
+        false
+      }
+      else {
+        println("Users: checkForDuplicates called: 2: There was a duplicate!")
+        true
+      }
+    }
     
   }
+
+
