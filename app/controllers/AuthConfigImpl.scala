@@ -1,6 +1,21 @@
 package controllers
 
+import models.Role
+import models.Users
+
+import play.api._
+import play.api.mvc._
+import play.api.mvc.Action
+import play.api.mvc.Controller
+import play.api.mvc.Results._
+import play.api.libs.functional._
+
 import jp.t2v.lab.play2.auth._
+
+import scala.reflect._
+import scala.concurrent._
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 trait AuthConfigImpl extends AuthConfig {
   
@@ -14,7 +29,7 @@ trait AuthConfigImpl extends AuthConfig {
    * A type that represents a user in your application.
    * `User`, `Account` and so on.
    */
-  type User = Account
+  type User = Users
 
   /**
    * A type that is defined by every action for authorization.
@@ -41,13 +56,12 @@ trait AuthConfigImpl extends AuthConfig {
    * A function that returns a `User` object from an `Id`.
    * You can alter the procedure to suit your application.
    */
-  def resolveUser(id: Id)(implicit ctx: ExecutionContext): Future[Option[User]] = Account.findById(id)
-
+  def resolveUser(id: Id)(implicit ctx: ExecutionContext): Future[Option[User]] = Future(Users.findById(id))
   /**
    * Where to redirect the user after a successful login.
    */
   def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] =
-    Future.successful(Redirect(routes.Message.main))
+    Future.successful(Redirect(controllers.routes.HomeController.index))
 
   /**
    * Where to redirect the user after logging out
@@ -74,8 +88,8 @@ trait AuthConfigImpl extends AuthConfig {
    */
   def authorize(user: User, authority: Authority)(implicit ctx: ExecutionContext): Future[Boolean] = Future.successful {
     (user.role, authority) match {
-      case (Administrator, _)       => true
-      case (NormalUser, NormalUser) => true
+      case (Role.Administrator, _)       => true
+      case (Role.NormalUser, Role.NormalUser) => true
       case _                        => false
     }
   }

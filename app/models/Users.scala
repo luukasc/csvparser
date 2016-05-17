@@ -3,65 +3,43 @@ package models
 import java.io._
 import scala.io.BufferedSource
 
-case class Users(username: String, password: String) {
+case class Users(id: String, email: String, password: String, name: String, role: Role) 
   
+
   
   object Users {
-    
-    val filePath: String = "/Users/luukascastren/Dropbox/Koodaus/CSVParser/users.txt"
-   
-    
-    def main(user: Users): Boolean = {
-      println("main")
-     var result: Boolean = false
-    
-      if (checkForDuplicates(user)) {
-        println("main: checkForDuplicates true")
-        if (authenticate(user)) { 
-          println("main: checkForDuplicates true: authenticate true")
-          result = true 
-          } else { 
-            println("main: checkForDuplicates true: authenticate false")
-            result = false 
-            }
-        } else {
-          println("main: checkForDuplicates false")
-          saveUser(user)
-          result = true}
-     result
+  
+    val filePath = models.Utils.filePath
+  
+    def authenticate(email: String, password: String): Option[Users] = {
+      findByEmail(email).filter( user => password == user.password)
     }
-    
-    
-    def saveUser(user: Users) = {
-      val bw = new BufferedWriter(new FileWriter(filePath, true))
-      bw.write(user.username + ";" + user.password  + "\n")
-      bw.close()   
+  
+    def findByEmail(email: String): Option[Users] = {
+      Option(findAll().toArray.filter(user => user.email  == email)(0))
     }
-    
-    def authenticate(user: Users): Boolean = {
-      var result: Boolean = false
-      if (scala.io.Source.fromFile(filePath).isEmpty) return true
-      for (line <- scala.io.Source.fromFile(filePath).getLines()) {
-        if (line.takeWhile(_ != ";") == (user.username + ";" + user.password)) { 
-          result = true
-          return result
-          } else { result = false }
+  
+    def findById(id: String): Option[Users] = {
+      Option(findAll().toArray.filter(user => user.id  == id)(0))
+    }
+  
+    def findAll(): Seq[Users] = {
+      var listOfAll: List[Users] = List()
+      
+      for (line <- scala.io.Source.fromFile(filePath).getLines.drop(1)) {
+        val column = line.split(",").map(_.trim)
+          listOfAll = new Users(column(0), column(1), column(2), column(3), models.Role.stringToRole(column(4))) :: listOfAll
       }
-      result
+      listOfAll.toSeq
     }
 
-    def checkForDuplicates(user: Users): Boolean = {
-      var result: Boolean = false
-      if (scala.io.Source.fromFile(filePath).isEmpty) return true
-      for (line <- scala.io.Source.fromFile(filePath).getLines()) {
-        if (line.split(";")(0) == user.username) { 
-          result = true
-          return result
-          } 
-          else { result = false}
-      }
-      result
+    def create(users: Users) {
+        val bw = new BufferedWriter(new FileWriter(filePath, true))
+        bw.write(users.id + "," + users.email + "," + users.name + "," + users.role.toString)
+        bw.close()  
     }
     
+    
+    
+    
   }
-}

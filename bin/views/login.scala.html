@@ -1,9 +1,44 @@
-@()
+@(form: Form[Option[Users]])(implicit flash: Flash)
 @main("Login") {
+
+<body>
+
+  @helper.form(controllers.routes.HomeController.authenticate) {
+
+    <h1>Sign in</h1>
+
+    @form.globalError.map { error =>
+      <p class="error">
+        @error.message
+      </p>
+    }
+
+    @flash.get("success").map { message =>
+      <p class="success">
+        @message
+      </p>
+    }
+
+    <p>
+      <input type="email" name="email" placeholder="Email" id="email" value="@form("email").value">
+    </p>
+    <p>
+      <input type="password" name="password" id="password" placeholder="Password">
+    </p>
+    <p>
+      <button type="submit" id="loginbutton">Login</button>
+    </p>
+
+  }
+
+</body>
+	
+}
+	<!--  Login with javascript
   <div data-ng-app="" data-ng-controller="LoginController">
     <h1>Login Form</h1>
     <form role="form"
-      data-ng-submit="postLoginForm('@routes.HomeController.login', '@routes.HomeController.welcome()')">
+      data-ng-submit="postLoginForm('"poistettu at"routes.HomeController.login', '"poistettu at"routes.HomeController.welcome()')">
       
       <div class="form-group">
         <label for="username">Username</label>
@@ -25,11 +60,12 @@
   </div>
   <script type="text/javascript"
      src="@routes.Assets.versioned("javascripts/login.js")"></script>
-}
+
+-->
 
 
-
-<!--  <table style = "width:50%">
+<!--  Experimental create User
+<table style = "width:50%">
 	      <tr>
 		      <td>
 		      	<input type="submit" value="Login">

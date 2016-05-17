@@ -2,10 +2,18 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET		/              		controllers.HomeController.login
-GET		/login				controllers.HomeController.login
-POST	/login				controllers.HomeController.postLogin
-POST	/					controllers.HomeController.postLogin
+# Logins:
+GET		/                           controllers.HomeController.login
+GET		/login						controllers.HomeController.login
+GET		/logout						controllers.HomeController.logout
+
+POST	/login						controllers.HomeController.authenticate
+
+# Messages:
+GET     /messages/main               controllers.Messages.main
+GET     /messages/list               controllers.Messages.list
+GET     /messages/detail/:id         controllers.Messages.detail(id: Int)
+GET     /messages/write              controllers.Messages.write
 
 # Search
 GET		/search/:term   	controllers.Search.perform(term:String)
@@ -17,8 +25,6 @@ GET		/files/detail/:name	   	controllers.HomeController.detail(name: String)
 
 
 GET		/files 				controllers.HomeController.index
-
-GET		/welcome			controllers.HomeController.welcome
 
 GET		/createUser			controllers.HomeController.createUser
 

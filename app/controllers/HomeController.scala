@@ -1,30 +1,29 @@
 package controllers
 
 import javax.inject._
+import jp.t2v.lab.play2.auth.LoginLogout
+import jp.t2v.lab.play2.auth.AuthElement
+import models._
+
 import scala.collection.mutable._
-import models.Parser._
-import models.Users._
-import models.CSV._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.functional._
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json._
-import play.api.libs.json.JsPath
-import play.api.libs.json.Json.toJson
-import play.api.libs.json.Reads
-import play.api.libs.json.Reads._
-import play.api.libs.json.Reads.StringReads
-import play.api.libs.json.Reads.functorReads
 import play.api.mvc.Action
 import play.api.mvc.Controller
+import play.api.data._
+import play.api.data.Forms._
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() extends Controller {
+class HomeController @Inject() extends Controller with AuthConfigImpl with LoginLogout with AuthElement {
 
   /**
    * Create an Action to render an HTML page with a welcome message.
@@ -32,7 +31,7 @@ class HomeController @Inject() extends Controller {
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index() = Action {
+  def index() = StackAction(AuthorityKey -> Role.NormalUser) { implicit request =>
     val all = models.Result.all
     var arrayCSV: Buffer[models.CSV] = Buffer()
     
@@ -53,47 +52,52 @@ class HomeController @Inject() extends Controller {
     val CSV = models.Parser.start(args)
     Ok(views.html.details(args, CSV))
   }
-  
-  def login() = Action {
-    Ok(views.html.login()).withNewSession
-  }
-  
-  // Handles the username-password sent as JSON:
-  def postLogin = Action(parse.json) { request =>
-  
-    // Creates a reader for the JSON - turns it into a LoginRequest
-    implicit val loginRequest: Reads[LoginRequest] = Json.reads[LoginRequest]
-  
-    /*
-     * Call validate and if ok we return valid=true and put username in session
-     */
-    request.body.validate[LoginRequest] match {
-      case s: JsSuccess[LoginRequest] if (s.get.authenticate) => {
-        Ok(toJson(Map("valid" -> true))).withSession("user" -> s.get.username)
-      }
-      // Not valid
-      case _ => Ok(toJson(Map("valid" -> false)))
-    }
-  }
-  
-   def welcome =  Action { implicit request =>
-    request.session.get("user").map {
-      user =>
-        {
-          Redirect(routes.HomeController.index())
-        }
-    }.getOrElse(Redirect(routes.HomeController.login()))
-  }
 
-  
-case class LoginRequest(username: String, password: String) {
-    println("LoginRequest called with: " + username + " " + password)
-    val user = new models.Users(username, password)
-    def authenticate = user.Users.main(user)
+  def createUser() = Action {
+    Ok(views.html.createUser())
 }
 
-def createUser() = Action {
-  Ok(views.html.createUser())
-}
+  /** Alter the login page action to suit your application. */
+  def login = Action { implicit request =>
+    Ok(views.html.login(loginForm))
+  }
+
+    /** Your application's login form.  Alter it to fit your application */
+  val loginForm = Form {
+      mapping("email" -> email, "password" -> text)(Users.authenticate)(_.map(u => (u.email, "")))
+      .verifying("Invalid email or password", result => result.isDefined)
+  }
+  
+    /**
+   * Return the `gotoLogoutSucceeded` method's result in the logout action.
+   *
+   * Since the `gotoLogoutSucceeded` returns `Future[Result]`,
+   * you can add a procedure like the following.
+   *
+   *   gotoLogoutSucceeded.map(_.flashing(
+   *     "success" -> "You've been logged out"
+   *   ))
+   */
+  def logout = Action.async { implicit request =>
+    // do something...
+    gotoLogoutSucceeded.map(_.flashing(
+        "success" -> Utils.exitSuccesText
+        ).removingFromSession("rememberme"))
+  }
+
+    /**
+   * Return the `gotoLoginSucceeded` method's result in the login action.
+   *
+   * Since the `gotoLoginSucceeded` returns `Future[Result]`,
+   * you can add a procedure like the `gotoLogoutSucceeded`.
+   */
+  def authenticate = Action.async { implicit request =>
+    loginForm.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(views.html.login(formWithErrors))),
+      user => gotoLoginSucceeded(user.get.id)
+    )
+  }
+
+
 
 }

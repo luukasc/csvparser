@@ -25,7 +25,7 @@ function PageController($scope, $http, $window) {
 
 function FlowController($scope, $http, $window) { 
 	$scope.backToLogin = function() {
-        	$window.location.href = "/login";
+        	$window.location.href = "/logout";
     },
     $scope.backToFiles = function() {
     	$window.location.href = "/files";
