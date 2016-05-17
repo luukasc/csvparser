@@ -16,7 +16,11 @@ case class Users(id: String, email: String, password: String, name: String, role
     }
   
     def findByEmail(email: String): Option[Users] = {
-      Option(findAll().toArray.filter(user => user.email  == email)(0))
+      try {
+        Option(findAll().toArray.filter(user => user.email  == email)(0))
+      } catch {
+        case e: Exception => Option(null)
+      }
     }
   
     def findById(id: String): Option[Users] = {
