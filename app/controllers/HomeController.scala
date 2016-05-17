@@ -47,14 +47,13 @@ class HomeController @Inject() extends Controller with AuthConfigImpl with Login
     CSV
   }
   
-  def detail(args: String) = Action {
-    implicit request => println(args)
+  def detail(args: String) = StackAction(AuthorityKey -> Role.NormalUser) { implicit request =>
     val CSV = models.Parser.start(args)
     Ok(views.html.details(args, CSV))
   }
 
-  def createUser() = Action {
-    Ok(views.html.createUser())
+  def listDetails() = Action {
+    Ok(views.html.listDetails())
 }
 
   /** Alter the login page action to suit your application. */

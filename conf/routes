@@ -26,7 +26,7 @@ GET		/files/detail/:name	   	controllers.HomeController.detail(name: String)
 
 GET		/files 				controllers.HomeController.index
 
-GET		/createUser			controllers.HomeController.createUser
+GET		/listDetails			controllers.HomeController.listDetails
 
 
 # Map static resources from the /public folder to the /assets URL path

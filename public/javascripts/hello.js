@@ -36,10 +36,10 @@ function FlowController($scope, $http, $window) {
 }
 
 function SomeController($scope,  $http) {
-	$scope.customHtml = "";
+	$scope.listDetailsHtml = "";
 	var httpRequest = $http({
         method : 'GET',
-        url : "/createUser",
+        url : "/listDetails",
     }).success(function(data, status) {
     	$scope.customHtml = data;
     }).error(function(arg) {
